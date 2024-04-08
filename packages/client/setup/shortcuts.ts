@@ -1,18 +1,19 @@
-/* __imports__ */
-import { and, not } from '@vueuse/math'
+import { and, not, or } from '@vueuse/math'
 import type { NavOperations, ShortcutOptions } from '@slidev/types'
-import { downloadPDF, go, goFirst, goLast, next, nextSlide, prev, prevSlide } from '../logic/nav'
+import { downloadPDF } from '../utils'
 import { toggleDark } from '../logic/dark'
 import { magicKeys, showGotoDialog, showOverview, toggleOverview } from '../state'
-import { drawingEnabled } from '../logic/drawings'
+import { useNav } from '../composables/useNav'
+import { useDrawings } from '../composables/useDrawings'
 import { currentOverviewPage, downOverviewPage, nextOverviewPage, prevOverviewPage, upOverviewPage } from './../logic/overview'
+import setups from '#slidev/setups/shortcuts'
 
 export default function setupShortcuts() {
-  const { escape, space, shift, left, right, up, down, enter, d, g, o } = magicKeys
+  const { go, goFirst, goLast, next, nextSlide, prev, prevSlide } = useNav()
+  const { drawingEnabled } = useDrawings()
+  const { escape, space, shift, left, right, up, down, enter, d, g, o, '`': backtick } = magicKeys
 
-  // @ts-expect-error injected in runtime
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const injection_arg: NavOperations = {
+  const context: NavOperations = {
     next,
     prev,
     nextSlide,
@@ -28,8 +29,7 @@ export default function setupShortcuts() {
     showGotoDialog: () => showGotoDialog.value = !showGotoDialog.value,
   }
 
-  // eslint-disable-next-line prefer-const
-  let injection_return: ShortcutOptions[] = [
+  let shortcuts: ShortcutOptions[] = [
     { name: 'next_space', key: and(space, not(shift)), fn: next, autoRepeat: true },
     { name: 'prev_space', key: and(space, shift), fn: prev, autoRepeat: true },
     { name: 'next_right', key: and(right, not(shift), not(showOverview)), fn: next, autoRepeat: true },
@@ -41,7 +41,7 @@ export default function setupShortcuts() {
     { name: 'next_shift', key: and(right, shift), fn: nextSlide, autoRepeat: true },
     { name: 'prev_shift', key: and(left, shift), fn: () => prevSlide(false), autoRepeat: true },
     { name: 'toggle_dark', key: and(d, not(drawingEnabled)), fn: toggleDark },
-    { name: 'toggle_overview', key: and(o, not(drawingEnabled)), fn: toggleOverview },
+    { name: 'toggle_overview', key: and(or(o, backtick), not(drawingEnabled)), fn: toggleOverview },
     { name: 'hide_overview', key: and(escape, not(drawingEnabled)), fn: () => showOverview.value = false },
     { name: 'goto', key: and(g, not(drawingEnabled)), fn: () => showGotoDialog.value = !showGotoDialog.value },
     { name: 'next_overview', key: and(right, showOverview), fn: nextOverviewPage },
@@ -58,11 +58,14 @@ export default function setupShortcuts() {
     },
   ]
 
-  const baseShortcutNames = new Set(injection_return.map(s => s.name))
+  const baseShortcutNames = new Set(shortcuts.map(s => s.name))
 
-  /* __chained_injections__ */
+  for (const setup of setups) {
+    const result = setup(context, shortcuts)
+    shortcuts = shortcuts.concat(result)
+  }
 
-  const remainingBaseShortcutNames = injection_return.filter(s => s.name && baseShortcutNames.has(s.name))
+  const remainingBaseShortcutNames = shortcuts.filter(s => s.name && baseShortcutNames.has(s.name))
   if (remainingBaseShortcutNames.length === 0) {
     const message = [
       '========== WARNING ==========',
@@ -76,5 +79,5 @@ export default function setupShortcuts() {
     console.warn(message)
   }
 
-  return injection_return
+  return shortcuts
 }

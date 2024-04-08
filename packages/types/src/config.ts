@@ -1,3 +1,5 @@
+import type { TransitionGroupProps } from 'vue'
+import type { ExportArgs } from './cli'
 import type { SlidevThemeConfig } from './types'
 
 export interface SlidevConfig {
@@ -32,9 +34,24 @@ export interface SlidevConfig {
    * Enable Monaco
    *
    * @see https://sli.dev/custom/config-monaco.html
-   * @default 'dev'
+   * @default true
    */
   monaco: boolean | 'dev' | 'build'
+  /**
+   * Where to load monaco types from
+   *
+   * - `cdn` - load from CDN with `@typescript/ata`
+   * - `local` - load from local node_modules
+   *
+   * @default 'local'
+   */
+  monacoTypesSource: 'cdn' | 'local' | 'none'
+  /**
+   * Additional node packages to load as monaco types
+   *
+   * @default []
+   */
+  monacoTypesAdditionalPackages: string[]
   /**
    * Show a download button in the SPA build,
    * could also be a link to custom pdf
@@ -42,6 +59,12 @@ export interface SlidevConfig {
    * @default false
    */
   download: boolean | string
+  /**
+   * Options for export
+   *
+   * @default {}
+   */
+  export: ResolvedExportOptions
   /**
    * Show a copy button in code blocks
    *
@@ -59,9 +82,15 @@ export interface SlidevConfig {
    * Prefer highlighter
    *
    * @see https://sli.dev/custom/highlighters.html
-   * @default prism
+   * @default shiki
    */
   highlighter: 'prism' | 'shiki'
+  /**
+   * Enable Twoslash
+   *
+   * @default true
+   */
+  twoslash: boolean | 'dev' | 'build'
   /**
    * Show line numbers in code blocks
    *
@@ -156,13 +185,54 @@ export interface SlidevConfig {
    */
   remote?: string | boolean
   /**
-   * Engine for atomic CSS
+   * Engine for Atomic CSS
    *
-   * UnoCSS support is currently experimental.
-   *
-   * @default 'windicss'
+   * @see https://unocss.dev/
+   * @default 'unocss'
    */
-  css: 'windicss' | 'unocss'
+  css: 'unocss' | 'none'
+  /**
+   * Enable presenter mode
+   *
+   * @default true
+   */
+  presenter: boolean | 'dev' | 'build'
+  /**
+   * Attributes to apply to the HTML element
+   *
+   * @default {}
+   */
+  htmlAttrs: Record<string, string>
+  /**
+   * Page transition, powered by Vue's <TransitionGroup/>
+   *
+   * Built-in transitions:
+   * - fade
+   * - fade-out
+   * - slide-left
+   * - slide-right
+   * - slide-up
+   * - slide-down
+   *
+   * @see https://sli.dev/guide/animations.html#pages-transitions
+   * @see https://vuejs.org/guide/built-ins/transition.html
+   */
+  transition?: BuiltinSlideTransition | string | TransitionGroupProps
+  /**
+   * Suppport MDC syntax
+   *
+   * @see https://github.com/antfu/markdown-it-mdc
+   * @see https://content.nuxtjs.org/guide/writing/mdc
+   * @experimental
+   * @default false
+   */
+  mdc?: boolean
+  /**
+   * Enable built-in editor
+   *
+   * @default true
+   */
+  editor: boolean
 }
 
 export interface FontOptions {
@@ -194,7 +264,6 @@ export interface FontOptions {
    * @default false
    */
   italic?: boolean
-
   /**
    * @default 'google'
    */
@@ -261,3 +330,11 @@ export interface ResolvedDrawingsOptions {
   presenterOnly: boolean
   syncAll: boolean
 }
+
+export interface ResolvedExportOptions extends Omit<ExportArgs, 'entry' | 'theme'> {
+  withClicks?: boolean
+  executablePath?: string
+  withToc?: boolean
+}
+
+export type BuiltinSlideTransition = 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'fade' | 'zoom' | 'none'

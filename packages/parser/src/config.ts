@@ -1,23 +1,24 @@
 import { toArray, uniq } from '@antfu/utils'
-import type { DrawingsOptions, FontOptions, ResolvedDrawingsOptions, ResolvedFontOptions, SlidevConfig, SlidevThemeMeta } from '@slidev/types'
+import type { DrawingsOptions, FontOptions, ResolvedDrawingsOptions, ResolvedExportOptions, ResolvedFontOptions, SlidevConfig, SlidevThemeMeta } from '@slidev/types'
 import { parseAspectRatio } from './utils'
 
-export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, filepath?: string, verify = false) {
-  const themeHightlighter = ['prism', 'shiki'].includes(themeMeta.highlighter || '') ? themeMeta.highlighter as 'prism' | 'shiki' : undefined
-  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '') ? themeMeta.colorSchema as 'light' | 'dark' : undefined
-
-  const defaultConfig: SlidevConfig = {
+export function getDefaultConfig(): SlidevConfig {
+  return {
     theme: 'default',
     title: 'Slidev',
     titleTemplate: '%s - Slidev',
     addons: [],
     remoteAssets: false,
-    monaco: 'dev',
+    monaco: true,
+    monacoTypesSource: 'local',
+    monacoTypesAdditionalPackages: [],
     download: false,
+    export: {} as ResolvedExportOptions,
     info: false,
-    highlighter: themeHightlighter || 'prism',
+    highlighter: 'shiki',
+    twoslash: true,
     lineNumbers: false,
-    colorSchema: themeColorSchema || 'auto',
+    colorSchema: 'auto',
     routerMode: 'history',
     aspectRatio: 16 / 9,
     canvasWidth: 980,
@@ -30,10 +31,28 @@ export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, 
     plantUmlServer: 'https://www.plantuml.com/plantuml',
     codeCopy: true,
     record: 'dev',
-    css: 'windicss',
+    css: 'unocss',
+    presenter: true,
+    htmlAttrs: {},
+    transition: undefined,
+    editor: true,
   }
+}
+
+export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, filepath?: string, verify = false) {
+  const themeHightlighter = ['prism', 'shiki', 'shikiji'].includes(themeMeta.highlighter || '')
+    ? themeMeta.highlighter as 'prism' | 'shiki'
+    : undefined
+  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '')
+    ? themeMeta.colorSchema as 'light' | 'dark'
+    : undefined
+
+  const defaultConfig = getDefaultConfig()
+
   const config: SlidevConfig = {
     ...defaultConfig,
+    highlighter: themeHightlighter || defaultConfig.highlighter,
+    colorSchema: themeColorSchema || defaultConfig.colorSchema,
     ...themeMeta.defaults,
     ...headmatter.config,
     ...headmatter,
@@ -43,6 +62,17 @@ export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, 
       ...headmatter?.fonts,
     }),
     drawings: resolveDrawings(headmatter.drawings, filepath),
+    htmlAttrs: {
+      ...themeMeta.defaults?.htmlAttrs,
+      ...headmatter.config?.htmlAttrs,
+      ...headmatter?.htmlAttrs,
+    },
+  }
+
+  // @ts-expect-error compat
+  if (config.highlighter === 'shikiji') {
+    console.warn(`[slidev] "shikiji" is merged back to "shiki", you can safely change it "highlighter: shiki"`)
+    config.highlighter = 'shiki'
   }
 
   if (config.colorSchema !== 'dark' && config.colorSchema !== 'light')
@@ -63,8 +93,12 @@ export function verifyConfig(
   themeMeta: SlidevThemeMeta = {},
   warn = (v: string) => console.warn(`[slidev] ${v}`),
 ) {
-  const themeHightlighter = ['prism', 'shiki'].includes(themeMeta.highlighter || '') ? themeMeta.highlighter as 'prism' | 'shiki' : undefined
-  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '') ? themeMeta.colorSchema as 'light' | 'dark' : undefined
+  const themeHightlighter = ['prism', 'shiki'].includes(themeMeta.highlighter || '')
+    ? themeMeta.highlighter as 'prism' | 'shiki'
+    : undefined
+  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '')
+    ? themeMeta.colorSchema as 'light' | 'dark'
+    : undefined
 
   if (themeColorSchema && config.colorSchema !== themeColorSchema)
     warn(`Color schema "${config.colorSchema}" does not supported by the theme`)
@@ -72,9 +106,9 @@ export function verifyConfig(
   if (themeHightlighter && config.highlighter !== themeHightlighter)
     warn(`Syntax highlighter "${config.highlighter}" does not supported by the theme`)
 
-  if (!['windicss', 'unocss', undefined].includes(config.css)) {
-    warn(`Unsupported Atomic CSS engine "${config.css}", fallback to Windi CSS`)
-    config.css = 'windicss'
+  if (!['unocss', undefined].includes(config.css)) {
+    warn(`Unsupported Atomic CSS engine "${config.css}", fallback to UnoCSS`)
+    config.css = 'unocss'
   }
 }
 

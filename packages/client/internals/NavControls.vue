@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef } from 'vue'
 import { isColorSchemaConfigured, isDark, toggleDark } from '../logic/dark'
-import { currentPage, downloadPDF, hasNext, hasPrev, isEmbedded, isPresenter, next, presenterPassword, prev, showPresenter, total } from '../logic/nav'
-import { activeElement, breakpoints, fullscreen, showEditor, showInfoDialog, showPresenterCursor, toggleOverview } from '../state'
-import { brush, drawingEnabled } from '../logic/drawings'
+import { downloadPDF } from '../utils'
+import { activeElement, breakpoints, fullscreen, presenterLayout, showEditor, showInfoDialog, showPresenterCursor, toggleOverview, togglePresenterLayout } from '../state'
 import { configs } from '../env'
+import { useNav } from '../composables/useNav'
+import { getSlidePath } from '../logic/slides'
+import { useDrawings } from '../composables/useDrawings'
 import Settings from './Settings.vue'
 import MenuButton from './MenuButton.vue'
 import VerticalDivider from './VerticalDivider.vue'
-// @ts-expect-error virtual module
-import CustomNavControls from '/@slidev/custom-nav-controls'
+import IconButton from './IconButton.vue'
+
+import CustomNavControls from '#slidev/custom-nav-controls'
 
 const props = defineProps({
   persist: {
@@ -17,23 +20,40 @@ const props = defineProps({
   },
 })
 
+const {
+  currentRoute,
+  currentSlideNo,
+  hasNext,
+  hasPrev,
+  isEmbedded,
+  isPresenter,
+  isPresenterAvailable,
+  next,
+  prev,
+  total,
+} = useNav()
+const {
+  brush,
+  drawingEnabled,
+} = useDrawings()
+
 const md = breakpoints.smaller('md')
 const { isFullscreen, toggle: toggleFullscreen } = fullscreen
 
+const presenterPassword = computed(() => currentRoute.value.query.password)
 const query = computed(() => presenterPassword.value ? `?password=${presenterPassword.value}` : '')
-const presenterLink = computed(() => `/presenter/${currentPage.value}${query.value}`)
-const nonPresenterLink = computed(() => `/${currentPage.value}${query.value}`)
+const presenterLink = computed(() => `${getSlidePath(currentSlideNo.value, true)}${query.value}`)
+const nonPresenterLink = computed(() => `${getSlidePath(currentSlideNo.value, false)}${query.value}`)
 
 const root = ref<HTMLDivElement>()
-const onMouseLeave = () => {
+function onMouseLeave() {
   if (root.value && activeElement.value && root.value.contains(activeElement.value))
     activeElement.value.blur()
 }
 
 const barStyle = computed(() => props.persist
   ? 'text-$slidev-controls-foreground bg-transparent'
-  : 'rounded-md bg-main shadow dark:border dark:border-gray-400 dark:border-opacity-10',
-)
+  : 'rounded-md bg-main shadow dark:border dark:border-main')
 
 const RecordingControls = shallowRef<any>()
 if (__SLIDEV_FEATURE_RECORD__)
@@ -51,32 +71,27 @@ if (__SLIDEV_FEATURE_DRAWINGS__)
       :class="barStyle"
       @mouseleave="onMouseLeave"
     >
-      <button v-if="!isEmbedded" class="icon-btn" @click="toggleFullscreen">
+      <IconButton v-if="!isEmbedded" :title="isFullscreen ? 'Close fullscreen' : 'Enter fullscreen'" @click="toggleFullscreen">
         <carbon:minimize v-if="isFullscreen" />
         <carbon:maximize v-else />
-      </button>
-
-      <button class="icon-btn" :class="{ disabled: !hasPrev }" @click="prev">
+      </IconButton>
+      <IconButton :class="{ disabled: !hasPrev }" title="Go to previous slide" @click="prev">
         <carbon:arrow-left />
-      </button>
-
-      <button class="icon-btn" :class="{ disabled: !hasNext }" title="Next" @click="next">
+      </IconButton>
+      <IconButton :class="{ disabled: !hasNext }" title="Go to next slide" @click="next">
         <carbon:arrow-right />
-      </button>
-
-      <button v-if="!isEmbedded" class="icon-btn" title="Slides overview" @click="toggleOverview()">
+      </IconButton>
+      <IconButton v-if="!isEmbedded" title="Show slide overview" @click="toggleOverview()">
         <carbon:apps />
-      </button>
-
-      <button
+      </IconButton>
+      <IconButton
         v-if="!isColorSchemaConfigured"
-        class="icon-btn"
-        title="Toggle dark mode"
+        :title="isDark ? 'Switch to light mode theme' : 'Switch to dark mode theme'"
         @click="toggleDark()"
       >
         <carbon-moon v-if="isDark" />
         <carbon-sun v-else />
-      </button>
+      </IconButton>
 
       <VerticalDivider />
 
@@ -86,61 +101,70 @@ if (__SLIDEV_FEATURE_DRAWINGS__)
           <VerticalDivider />
         </template>
 
-        <button
+        <IconButton
           v-if="isPresenter"
-          class="icon-btn"
-          title="Show presenter cursor"
+          :title="showPresenterCursor ? 'Hide presenter cursor' : 'Show presenter cursor'"
           @click="showPresenterCursor = !showPresenterCursor"
         >
           <ph-cursor-fill v-if="showPresenterCursor" />
-          <ph-cursor-duotone v-else class="opacity-50" />
-        </button>
+          <ph-cursor-duotone v-else />
+        </IconButton>
       </template>
 
-      <template v-if="__SLIDEV_FEATURE_DRAWINGS__ && !configs.drawings.presenterOnly && !isEmbedded">
-        <button class="icon-btn relative" title="Drawing" @click="drawingEnabled = !drawingEnabled">
+      <template v-if="__SLIDEV_FEATURE_DRAWINGS__ && (!configs.drawings.presenterOnly || isPresenter) && !isEmbedded">
+        <IconButton class="relative" :title="drawingEnabled ? 'Hide drawing toolbar' : 'Show drawing toolbar'" @click="drawingEnabled = !drawingEnabled">
           <carbon:pen />
           <div
             v-if="drawingEnabled"
             class="absolute left-1 right-1 bottom-0 h-0.7 rounded-full"
             :style="{ background: brush.color }"
           />
-        </button>
+        </IconButton>
         <VerticalDivider />
       </template>
 
       <template v-if="!isEmbedded">
-        <RouterLink v-if="isPresenter" :to="nonPresenterLink" class="icon-btn" title="Play Mode">
+        <RouterLink v-if="isPresenter" :to="nonPresenterLink" class="slidev-icon-btn" title="Play Mode">
           <carbon:presentation-file />
         </RouterLink>
-        <RouterLink v-if="showPresenter" :to="presenterLink" class="icon-btn" title="Presenter Mode">
+        <RouterLink v-if="__SLIDEV_FEATURE_PRESENTER__ && isPresenterAvailable" :to="presenterLink" class="slidev-icon-btn" title="Presenter Mode">
           <carbon:user-speaker />
         </RouterLink>
 
-        <button v-if="__DEV__ && !isPresenter" class="icon-btn <md:hidden" @click="showEditor = !showEditor">
+        <IconButton
+          v-if="__DEV__ && __SLIDEV_FEATURE_EDITOR__"
+          :title="showEditor ? 'Hide editor' : 'Show editor'"
+          class="lt-md:hidden"
+          @click="showEditor = !showEditor"
+        >
           <carbon:text-annotation-toggle />
-        </button>
+        </IconButton>
+
+        <IconButton v-if="isPresenter" title="Toggle Presenter Layout" class="aspect-ratio-initial" @click="togglePresenterLayout">
+          <carbon:template />
+          {{ presenterLayout }}
+        </IconButton>
       </template>
       <template v-if="!__DEV__">
-        <button v-if="configs.download" class="icon-btn" @click="downloadPDF">
+        <IconButton v-if="configs.download" title="Download as PDF" @click="downloadPDF">
           <carbon:download />
-        </button>
+        </IconButton>
       </template>
 
-      <button
+      <IconButton
         v-if="!isPresenter && configs.info && !isEmbedded"
-        class="icon-btn"
+        title="Show info"
         @click="showInfoDialog = !showInfoDialog"
       >
         <carbon:information />
-      </button>
+      </IconButton>
 
       <template v-if="!isPresenter && !isEmbedded">
         <MenuButton>
           <template #button>
-            <button class="icon-btn">
+            <IconButton title="Adjust settings">
               <carbon:settings-adjust />
-            </button>
+            </IconButton>
           </template>
           <template #menu>
             <Settings />
@@ -152,7 +176,7 @@ if (__SLIDEV_FEATURE_DRAWINGS__)
 
       <div class="h-40px flex" p="l-1 t-0.5 r-2" text="sm leading-2">
         <div class="my-auto">
-          {{ currentPage }}
+          {{ currentSlideNo }}
           <span class="opacity-50">/ {{ total }}</span>
         </div>
       </div>
@@ -160,4 +184,4 @@ if (__SLIDEV_FEATURE_DRAWINGS__)
       <CustomNavControls />
     </div>
   </nav>
-</template>
+</template>../composables/drawings

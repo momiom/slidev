@@ -1,61 +1,52 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`md parser > frontmatter.md > config 1`] = `
 {
-  "addons": [],
-  "aspectRatio": 1.7777777777777777,
-  "canvasWidth": 980,
-  "codeCopy": true,
-  "colorSchema": "auto",
-  "css": "windicss",
-  "download": false,
   "drawings": {
     "enabled": true,
     "persist": false,
     "presenterOnly": false,
     "syncAll": true,
   },
-  "exportFilename": "",
-  "favicon": "https://cdn.jsdelivr.net/gh/slidevjs/slidev/assets/favicon.png",
   "fonts": {
     "italic": false,
     "local": [],
     "mono": [
-      "\\"Fira Code\\"",
+      ""Fira Code"",
       "ui-monospace",
       "SFMono-Regular",
       "Menlo",
       "Monaco",
       "Consolas",
-      "\\"Liberation Mono\\"",
-      "\\"Courier New\\"",
+      ""Liberation Mono"",
+      ""Courier New"",
       "monospace",
     ],
     "provider": "google",
     "sans": [
-      "\\"Roboto\\"",
-      "\\"Lato\\"",
+      ""Roboto"",
+      ""Lato"",
       "ui-sans-serif",
       "system-ui",
       "-apple-system",
       "BlinkMacSystemFont",
-      "\\"Segoe UI\\"",
+      ""Segoe UI"",
       "Roboto",
-      "\\"Helvetica Neue\\"",
+      ""Helvetica Neue"",
       "Arial",
-      "\\"Noto Sans\\"",
+      ""Noto Sans"",
       "sans-serif",
-      "\\"Apple Color Emoji\\"",
-      "\\"Segoe UI Emoji\\"",
-      "\\"Segoe UI Symbol\\"",
-      "\\"Noto Color Emoji\\"",
+      ""Apple Color Emoji"",
+      ""Segoe UI Emoji"",
+      ""Segoe UI Symbol"",
+      ""Noto Color Emoji"",
     ],
     "serif": [
-      "\\"Mate SC\\"",
+      ""Mate SC"",
       "ui-serif",
       "Georgia",
       "Cambria",
-      "\\"Times New Roman\\"",
+      ""Times New Roman"",
       "Times",
       "serif",
     ],
@@ -71,20 +62,8 @@ exports[`md parser > frontmatter.md > config 1`] = `
       "600",
     ],
   },
-  "highlighter": "prism",
-  "info": false,
   "layout": "cover",
-  "lineNumbers": false,
-  "monaco": "dev",
-  "plantUmlServer": "https://www.plantuml.com/plantuml",
-  "record": "dev",
-  "remoteAssets": false,
-  "routerMode": "history",
-  "selectable": false,
-  "theme": "default",
-  "themeConfig": {},
   "title": "Hi",
-  "titleTemplate": "%s - Slidev",
 }
 `;
 
@@ -100,10 +79,7 @@ exports[`md parser > frontmatter.md > features 1`] = `
 exports[`md parser > frontmatter.md > slides 1`] = `
 [
   {
-    "content": "
-# Hi
-",
-    "end": 8,
+    "content": "# Hi",
     "frontmatter": {
       "fonts": {
         "mono": "Fira Code",
@@ -111,31 +87,50 @@ exports[`md parser > frontmatter.md > slides 1`] = `
         "serif": "Mate SC",
       },
       "layout": "cover",
-      "title": "Hi",
     },
     "index": 0,
     "level": 1,
     "note": undefined,
-    "raw": "---
+    "source": {
+      "content": "
+# Hi
+",
+      "end": 10,
+      "frontmatter": {
+        "fonts": {
+          "mono": "Fira Code",
+          "sans": "Roboto, Lato",
+          "serif": "Mate SC",
+        },
+        "layout": "cover",
+      },
+      "frontmatterRaw": "layout: cover
+fonts:
+  sans: Roboto, Lato
+  serif: Mate SC
+  mono: Fira Code
+",
+      "frontmatterStyle": "frontmatter",
+      "index": 0,
+      "level": 1,
+      "note": undefined,
+      "raw": "---
 layout: cover
 fonts:
   sans: Roboto, Lato
   serif: Mate SC
   mono: Fira Code
-title: Hi
 ---
 
 # Hi
-
 ",
-    "start": 0,
+      "start": 0,
+      "title": "Hi",
+    },
     "title": "Hi",
   },
   {
-    "content": "
-# Hello
-",
-    "end": 16,
+    "content": "# Hello",
     "frontmatter": {
       "layout": "center",
       "meta": {
@@ -146,7 +141,28 @@ title: Hi
     "index": 1,
     "level": 1,
     "note": "This is note",
-    "raw": "---
+    "source": {
+      "content": "
+# Hello
+",
+      "end": 23,
+      "frontmatter": {
+        "layout": "center",
+        "meta": {
+          "duration": 12,
+          "title": "FooBar",
+        },
+      },
+      "frontmatterRaw": "meta:
+  title: FooBar
+  duration: 12
+layout: center
+",
+      "frontmatterStyle": "frontmatter",
+      "index": 1,
+      "level": 1,
+      "note": "This is note",
+      "raw": "---
 meta:
   title: FooBar
   duration: 12
@@ -159,38 +175,61 @@ layout: center
 This is note
 -->
 ",
-    "start": 8,
+      "start": 10,
+      "title": "Hello",
+    },
     "title": "Hello",
   },
   {
-    "content": "
-# Morning
-",
-    "end": 19,
+    "content": "# Morning",
     "frontmatter": {},
     "index": 2,
     "level": 1,
     "note": undefined,
-    "raw": "
+    "source": {
+      "content": "
 # Morning
-
 ",
-    "start": 17,
+      "end": 27,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 2,
+      "level": 1,
+      "note": undefined,
+      "raw": "
+# Morning
+",
+      "start": 24,
+      "title": "Morning",
+    },
     "title": "Morning",
   },
   {
-    "content": "
-<!-- This is not note -->
-Hey
-",
-    "end": 26,
+    "content": "<!-- This is not note -->
+Hey",
     "frontmatter": {
       "layout": "text",
     },
     "index": 3,
     "level": undefined,
     "note": "This is note",
-    "raw": "---
+    "source": {
+      "content": "
+<!-- This is not note -->
+Hey
+",
+      "end": 38,
+      "frontmatter": {
+        "layout": "text",
+      },
+      "frontmatterRaw": "layout: text
+",
+      "frontmatterStyle": "frontmatter",
+      "index": 3,
+      "level": undefined,
+      "note": "This is note",
+      "raw": "---
 layout: text
 ---
 
@@ -201,55 +240,201 @@ Hey
 This is note
 -->
 ",
-    "start": 19,
+      "start": 27,
+      "title": undefined,
+    },
     "title": undefined,
   },
   {
-    "content": "
-\`\`\`md
+    "content": "\`\`\`md
 ---
 this should be treated as code block
 ---
-----
-\`\`\`
-",
-    "end": 35,
+
+---
+
+Also part of the code block
+\`\`\`",
     "frontmatter": {},
     "index": 4,
     "level": undefined,
     "note": undefined,
-    "raw": "
+    "source": {
+      "content": "
 \`\`\`md
 ---
 this should be treated as code block
 ---
-----
+
+---
+
+Also part of the code block
+\`\`\`
+",
+      "end": 50,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 4,
+      "level": undefined,
+      "note": undefined,
+      "raw": "
+\`\`\`md
+---
+this should be treated as code block
+---
+
+---
+
+Also part of the code block
+\`\`\`
+",
+      "start": 39,
+      "title": undefined,
+    },
+    "title": undefined,
+  },
+  {
+    "content": "Content 1",
+    "frontmatter": {
+      "layout": "from yaml",
+    },
+    "index": 5,
+    "level": undefined,
+    "note": undefined,
+    "source": {
+      "content": "
+Content 1
+",
+      "end": 59,
+      "frontmatter": {
+        "layout": "from yaml",
+      },
+      "frontmatterRaw": "
+# The first yaml block should be treated as frontmatter
+layout: from yaml
+",
+      "frontmatterStyle": "yaml",
+      "index": 5,
+      "level": undefined,
+      "note": undefined,
+      "raw": "\`\`\`yaml
+# The first yaml block should be treated as frontmatter
+layout: from yaml
 \`\`\`
 
+Content 1
 ",
-    "start": 27,
+      "start": 51,
+      "title": undefined,
+    },
     "title": undefined,
+  },
+  {
+    "content": "\`\`\`yaml
+# When there is already a frontmatter, the first yaml block should be treated as content
+layout: should not from yaml 1
+\`\`\`
+
+Content 2",
+    "frontmatter": {
+      "layout": "cover",
+    },
+    "index": 6,
+    "level": 1,
+    "note": undefined,
+    "source": {
+      "content": "
+\`\`\`yaml
+# When there is already a frontmatter, the first yaml block should be treated as content
+layout: should not from yaml 1
+\`\`\`
+
+Content 2
+",
+      "end": 70,
+      "frontmatter": {
+        "layout": "cover",
+      },
+      "frontmatterRaw": "layout: cover
+",
+      "frontmatterStyle": "frontmatter",
+      "index": 6,
+      "level": 1,
+      "note": undefined,
+      "raw": "---
+layout: cover
+---
+
+\`\`\`yaml
+# When there is already a frontmatter, the first yaml block should be treated as content
+layout: should not from yaml 1
+\`\`\`
+
+Content 2
+",
+      "start": 59,
+      "title": "When there is already a frontmatter, the first yaml block should be treated as content",
+    },
+    "title": "When there is already a frontmatter, the first yaml block should be treated as content",
+  },
+  {
+    "content": "# Title
+
+\`\`\`yaml
+# When there is already a frontmatter, the first yaml block should be treated as content
+layout: should not from yaml 2
+\`\`\`
+
+Content 3",
+    "frontmatter": {},
+    "index": 7,
+    "level": 1,
+    "note": undefined,
+    "source": {
+      "content": "
+# Title
+
+\`\`\`yaml
+# When there is already a frontmatter, the first yaml block should be treated as content
+layout: should not from yaml 2
+\`\`\`
+
+Content 3
+",
+      "end": 81,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 7,
+      "level": 1,
+      "note": undefined,
+      "raw": "
+# Title
+
+\`\`\`yaml
+# When there is already a frontmatter, the first yaml block should be treated as content
+layout: should not from yaml 2
+\`\`\`
+
+Content 3
+",
+      "start": 71,
+      "title": "Title",
+    },
+    "title": "Title",
   },
 ]
 `;
 
-exports[`md parser > minimal.md > config 1`] = `
+exports[`md parser > mdc.md > config 1`] = `
 {
-  "addons": [],
-  "aspectRatio": 1.7777777777777777,
-  "canvasWidth": 980,
-  "codeCopy": true,
-  "colorSchema": "auto",
-  "css": "windicss",
-  "download": false,
   "drawings": {
     "enabled": true,
     "persist": false,
     "presenterOnly": false,
     "syncAll": true,
   },
-  "exportFilename": "",
-  "favicon": "https://cdn.jsdelivr.net/gh/slidevjs/slidev/assets/favicon.png",
   "fonts": {
     "italic": false,
     "local": [],
@@ -259,8 +444,8 @@ exports[`md parser > minimal.md > config 1`] = `
       "Menlo",
       "Monaco",
       "Consolas",
-      "\\"Liberation Mono\\"",
-      "\\"Courier New\\"",
+      ""Liberation Mono"",
+      ""Courier New"",
       "monospace",
     ],
     "provider": "google",
@@ -269,22 +454,22 @@ exports[`md parser > minimal.md > config 1`] = `
       "system-ui",
       "-apple-system",
       "BlinkMacSystemFont",
-      "\\"Segoe UI\\"",
+      ""Segoe UI"",
       "Roboto",
-      "\\"Helvetica Neue\\"",
+      ""Helvetica Neue"",
       "Arial",
-      "\\"Noto Sans\\"",
+      ""Noto Sans"",
       "sans-serif",
-      "\\"Apple Color Emoji\\"",
-      "\\"Segoe UI Emoji\\"",
-      "\\"Segoe UI Symbol\\"",
-      "\\"Noto Color Emoji\\"",
+      ""Apple Color Emoji"",
+      ""Segoe UI Emoji"",
+      ""Segoe UI Symbol"",
+      ""Noto Color Emoji"",
     ],
     "serif": [
       "ui-serif",
       "Georgia",
       "Cambria",
-      "\\"Times New Roman\\"",
+      ""Times New Roman"",
       "Times",
       "serif",
     ],
@@ -295,19 +480,118 @@ exports[`md parser > minimal.md > config 1`] = `
       "600",
     ],
   },
-  "highlighter": "prism",
-  "info": false,
-  "lineNumbers": false,
-  "monaco": "dev",
-  "plantUmlServer": "https://www.plantuml.com/plantuml",
-  "record": "dev",
-  "remoteAssets": false,
-  "routerMode": "history",
-  "selectable": false,
-  "theme": "default",
-  "themeConfig": {},
+  "mdc": true,
+  "title": "MDC{style="color:red"}",
+}
+`;
+
+exports[`md parser > mdc.md > features 1`] = `
+{
+  "katex": false,
+  "mermaid": false,
+  "monaco": false,
+  "tweet": false,
+}
+`;
+
+exports[`md parser > mdc.md > slides 1`] = `
+[
+  {
+    "content": "# MDC{style="color:red"}
+
+:arrow{x1=1 y1=1 x2=2 y2=2}",
+    "frontmatter": {
+      "mdc": true,
+    },
+    "index": 0,
+    "level": 1,
+    "note": undefined,
+    "source": {
+      "content": "
+# MDC{style="color:red"}
+
+:arrow{x1=1 y1=1 x2=2 y2=2}
+",
+      "end": 8,
+      "frontmatter": {
+        "mdc": true,
+      },
+      "frontmatterRaw": "mdc: true
+",
+      "frontmatterStyle": "frontmatter",
+      "index": 0,
+      "level": 1,
+      "note": undefined,
+      "raw": "---
+mdc: true
+---
+
+# MDC{style="color:red"}
+
+:arrow{x1=1 y1=1 x2=2 y2=2}
+",
+      "start": 0,
+      "title": "MDC{style="color:red"}",
+    },
+    "title": "MDC{style="color:red"}",
+  },
+]
+`;
+
+exports[`md parser > minimal.md > config 1`] = `
+{
+  "drawings": {
+    "enabled": true,
+    "persist": false,
+    "presenterOnly": false,
+    "syncAll": true,
+  },
+  "fonts": {
+    "italic": false,
+    "local": [],
+    "mono": [
+      "ui-monospace",
+      "SFMono-Regular",
+      "Menlo",
+      "Monaco",
+      "Consolas",
+      ""Liberation Mono"",
+      ""Courier New"",
+      "monospace",
+    ],
+    "provider": "google",
+    "sans": [
+      "ui-sans-serif",
+      "system-ui",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      ""Segoe UI"",
+      "Roboto",
+      ""Helvetica Neue"",
+      "Arial",
+      ""Noto Sans"",
+      "sans-serif",
+      ""Apple Color Emoji"",
+      ""Segoe UI Emoji"",
+      ""Segoe UI Symbol"",
+      ""Noto Color Emoji"",
+    ],
+    "serif": [
+      "ui-serif",
+      "Georgia",
+      "Cambria",
+      ""Times New Roman"",
+      "Times",
+      "serif",
+    ],
+    "webfonts": [],
+    "weights": [
+      "200",
+      "400",
+      "600",
+    ],
+  },
   "title": "H1",
-  "titleTemplate": "%s - Slidev",
 }
 `;
 
@@ -323,8 +607,7 @@ exports[`md parser > minimal.md > features 1`] = `
 exports[`md parser > minimal.md > slides 1`] = `
 [
   {
-    "content": "
-# H1
+    "content": "# H1
 ## H2
 ### H3
 
@@ -332,19 +615,13 @@ Sample Text
 
 \`\`\`ts
 console.log('Hello World')
-\`\`\`
-",
-    "end": 10,
-    "frontmatter": {
-      "title": "H1",
-    },
+\`\`\`",
+    "frontmatter": {},
     "index": 0,
     "level": 1,
     "note": undefined,
-    "raw": "---
-title: H1
----
-
+    "source": {
+      "content": "
 # H1
 ## H2
 ### H3
@@ -354,51 +631,93 @@ Sample Text
 \`\`\`ts
 console.log('Hello World')
 \`\`\`
-
 ",
-    "start": 0,
+      "end": 10,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 0,
+      "level": 1,
+      "note": undefined,
+      "raw": "
+# H1
+## H2
+### H3
+
+Sample Text
+
+\`\`\`ts
+console.log('Hello World')
+\`\`\`
+",
+      "start": 0,
+      "title": "H1",
+    },
     "title": "H1",
   },
   {
-    "content": "
-# Hello
+    "content": "# Hello
 
 - Hello
 - Hi
 - Hey
-- Yo
-",
-    "end": 18,
+- Yo",
     "frontmatter": {},
     "index": 1,
     "level": 1,
     "note": undefined,
-    "raw": "
+    "source": {
+      "content": "
 # Hello
 
 - Hello
 - Hi
 - Hey
 - Yo
-
 ",
-    "start": 11,
+      "end": 19,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 1,
+      "level": 1,
+      "note": undefined,
+      "raw": "
+# Hello
+
+- Hello
+- Hi
+- Hey
+- Yo
+",
+      "start": 11,
+      "title": "Hello",
+    },
     "title": "Hello",
   },
   {
-    "content": "
-Nice to meet you
-",
-    "end": 22,
+    "content": "Nice to meet you",
     "frontmatter": {},
     "index": 2,
     "level": undefined,
     "note": undefined,
-    "raw": "
+    "source": {
+      "content": "
 Nice to meet you
-
 ",
-    "start": 19,
+      "end": 23,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 2,
+      "level": undefined,
+      "note": undefined,
+      "raw": "
+Nice to meet you
+",
+      "start": 20,
+      "title": undefined,
+    },
     "title": undefined,
   },
 ]
@@ -406,21 +725,12 @@ Nice to meet you
 
 exports[`md parser > multi-entries.md > config 1`] = `
 {
-  "addons": [],
-  "aspectRatio": 1.7777777777777777,
-  "canvasWidth": 980,
-  "codeCopy": true,
-  "colorSchema": "auto",
-  "css": "windicss",
-  "download": false,
   "drawings": {
     "enabled": true,
     "persist": false,
     "presenterOnly": false,
     "syncAll": true,
   },
-  "exportFilename": "",
-  "favicon": "https://cdn.jsdelivr.net/gh/slidevjs/slidev/assets/favicon.png",
   "fonts": {
     "italic": false,
     "local": [],
@@ -430,8 +740,8 @@ exports[`md parser > multi-entries.md > config 1`] = `
       "Menlo",
       "Monaco",
       "Consolas",
-      "\\"Liberation Mono\\"",
-      "\\"Courier New\\"",
+      ""Liberation Mono"",
+      ""Courier New"",
       "monospace",
     ],
     "provider": "google",
@@ -440,22 +750,22 @@ exports[`md parser > multi-entries.md > config 1`] = `
       "system-ui",
       "-apple-system",
       "BlinkMacSystemFont",
-      "\\"Segoe UI\\"",
+      ""Segoe UI"",
       "Roboto",
-      "\\"Helvetica Neue\\"",
+      ""Helvetica Neue"",
       "Arial",
-      "\\"Noto Sans\\"",
+      ""Noto Sans"",
       "sans-serif",
-      "\\"Apple Color Emoji\\"",
-      "\\"Segoe UI Emoji\\"",
-      "\\"Segoe UI Symbol\\"",
-      "\\"Noto Color Emoji\\"",
+      ""Apple Color Emoji"",
+      ""Segoe UI Emoji"",
+      ""Segoe UI Symbol"",
+      ""Noto Color Emoji"",
     ],
     "serif": [
       "ui-serif",
       "Georgia",
       "Cambria",
-      "\\"Times New Roman\\"",
+      ""Times New Roman"",
       "Times",
       "serif",
     ],
@@ -466,20 +776,8 @@ exports[`md parser > multi-entries.md > config 1`] = `
       "600",
     ],
   },
-  "highlighter": "prism",
-  "info": false,
-  "lineNumbers": false,
-  "monaco": "dev",
-  "plantUmlServer": "https://www.plantuml.com/plantuml",
-  "record": "dev",
-  "remoteAssets": false,
-  "routerMode": "history",
-  "selectable": false,
   "src": "sub/page1.md",
-  "theme": "default",
-  "themeConfig": {},
-  "title": undefined,
-  "titleTemplate": "%s - Slidev",
+  "title": "Page 1",
 }
 `;
 
@@ -495,46 +793,17 @@ exports[`md parser > multi-entries.md > features 1`] = `
 exports[`md parser > multi-entries.md > slides 1`] = `
 [
   {
-    "content": "
-# Page 1
-",
-    "end": 2,
-    "frontmatter": {
-      "srcSequence": "sub/page1.md",
-      "title": undefined,
-    },
+    "content": "# Page 1",
+    "frontmatter": {},
     "index": 0,
-    "inline": {
-      "content": "",
-      "end": 4,
-      "frontmatter": {
-        "title": undefined,
-      },
-      "index": 0,
-      "level": undefined,
-      "note": undefined,
-      "raw": "---
-src: sub/page1.md
----
-",
-      "start": 0,
-      "title": undefined,
-    },
     "level": 1,
     "note": undefined,
-    "raw": "---
-srcSequence: sub/page1.md
----
-
-# Page 1
-
-",
     "source": {
       "content": "# Page 1",
       "end": 2,
-      "frontmatter": {
-        "title": "Page 1",
-      },
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
       "index": 0,
       "level": 1,
       "note": undefined,
@@ -543,54 +812,19 @@ srcSequence: sub/page1.md
       "start": 0,
       "title": "Page 1",
     },
-    "start": 0,
     "title": "Page 1",
   },
   {
-    "content": "
-# Page 2
+    "content": "# Page 2
 
-<Tweet />
-",
-    "end": 8,
+<Tweet />",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#2",
       "layout": "cover",
-      "srcSequence": "sub/page2.md",
-      "title": "Page 2",
     },
     "index": 1,
-    "inline": {
-      "content": "",
-      "end": 9,
-      "frontmatter": {
-        "background": "https://sli.dev/demo-cover.png#2",
-      },
-      "index": 1,
-      "level": undefined,
-      "note": undefined,
-      "raw": "---
-src: sub/page2.md
-background: https://sli.dev/demo-cover.png#2
----
-",
-      "start": 4,
-      "title": undefined,
-    },
     "level": 1,
     "note": undefined,
-    "raw": "---
-layout: cover
-title: Page 2
-background: https://sli.dev/demo-cover.png#2
-srcSequence: sub/page2.md
----
-
-# Page 2
-
-<Tweet />
-
-",
     "source": {
       "content": "# Page 2
 
@@ -598,8 +832,10 @@ srcSequence: sub/page2.md
       "end": 8,
       "frontmatter": {
         "layout": "cover",
-        "title": "Page 2",
       },
+      "frontmatterRaw": "layout: cover
+",
+      "frontmatterStyle": "frontmatter",
       "index": 0,
       "level": 1,
       "note": undefined,
@@ -614,54 +850,22 @@ layout: cover
       "start": 0,
       "title": "Page 2",
     },
-    "start": 0,
     "title": "Page 2",
   },
   {
-    "content": "
-# Page 3
-",
-    "end": 2,
+    "content": "# Page 3",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#34",
-      "srcSequence": "sub/pages3-4.md",
-      "title": "Page 3",
     },
     "index": 2,
-    "inline": {
-      "content": "",
-      "end": 14,
-      "frontmatter": {
-        "background": "https://sli.dev/demo-cover.png#34",
-      },
-      "index": 2,
-      "level": undefined,
-      "note": undefined,
-      "raw": "---
-src: sub/pages3-4.md
-background: https://sli.dev/demo-cover.png#34
----
-",
-      "start": 9,
-      "title": undefined,
-    },
     "level": 1,
     "note": undefined,
-    "raw": "---
-title: Page 3
-background: https://sli.dev/demo-cover.png#34
-srcSequence: sub/pages3-4.md
----
-
-# Page 3
-
-",
     "source": {
       "content": "# Page 3",
       "end": 2,
-      "frontmatter": {
-        "title": "Page 3",
-      },
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
       "index": 0,
       "level": 1,
       "note": undefined,
@@ -670,35 +874,19 @@ srcSequence: sub/pages3-4.md
       "start": 0,
       "title": "Page 3",
     },
-    "start": 0,
     "title": "Page 3",
   },
   {
-    "content": "
-# Page 4
+    "content": "# Page 4
 
-<Tweet />
-",
-    "end": 10,
+<Tweet />",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#34",
       "layout": "cover",
-      "srcSequence": "sub/pages3-4.md",
     },
     "index": 3,
     "level": 1,
     "note": undefined,
-    "raw": "---
-layout: cover
-background: https://sli.dev/demo-cover.png#34
-srcSequence: sub/pages3-4.md
----
-
-# Page 4
-
-<Tweet />
-
-",
     "source": {
       "content": "# Page 4
 
@@ -707,6 +895,9 @@ srcSequence: sub/pages3-4.md
       "frontmatter": {
         "layout": "cover",
       },
+      "frontmatterRaw": "layout: cover
+",
+      "frontmatterStyle": "frontmatter",
       "index": 1,
       "level": 1,
       "note": undefined,
@@ -721,53 +912,22 @@ layout: cover
       "start": 2,
       "title": "Page 4",
     },
-    "start": 2,
     "title": "Page 4",
   },
   {
-    "content": "
-# Page 1
-",
-    "end": 2,
+    "content": "# Page 1",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#14",
-      "srcSequence": "sub/nested1-4.md,sub/page1.md",
-      "title": undefined,
     },
     "index": 4,
-    "inline": {
-      "content": "",
-      "end": 19,
-      "frontmatter": {
-        "background": "https://sli.dev/demo-cover.png#14",
-      },
-      "index": 3,
-      "level": undefined,
-      "note": undefined,
-      "raw": "---
-src: sub/nested1-4.md
-background: https://sli.dev/demo-cover.png#14
----
-",
-      "start": 14,
-      "title": undefined,
-    },
     "level": 1,
     "note": undefined,
-    "raw": "---
-background: https://sli.dev/demo-cover.png#14
-srcSequence: sub/nested1-4.md,sub/page1.md
----
-
-# Page 1
-
-",
     "source": {
       "content": "# Page 1",
       "end": 2,
-      "frontmatter": {
-        "title": "Page 1",
-      },
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
       "index": 0,
       "level": 1,
       "note": undefined,
@@ -776,37 +936,19 @@ srcSequence: sub/nested1-4.md,sub/page1.md
       "start": 0,
       "title": "Page 1",
     },
-    "start": 0,
     "title": "Page 1",
   },
   {
-    "content": "
-# Page 2
+    "content": "# Page 2
 
-<Tweet />
-",
-    "end": 8,
+<Tweet />",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#14",
       "layout": "cover",
-      "srcSequence": "sub/nested1-4.md,sub/page2.md",
-      "title": "Page 2",
     },
     "index": 5,
     "level": 1,
     "note": undefined,
-    "raw": "---
-layout: cover
-title: Page 2
-background: https://sli.dev/demo-cover.png#14
-srcSequence: sub/nested1-4.md,sub/page2.md
----
-
-# Page 2
-
-<Tweet />
-
-",
     "source": {
       "content": "# Page 2
 
@@ -814,8 +956,10 @@ srcSequence: sub/nested1-4.md,sub/page2.md
       "end": 8,
       "frontmatter": {
         "layout": "cover",
-        "title": "Page 2",
       },
+      "frontmatterRaw": "layout: cover
+",
+      "frontmatterStyle": "frontmatter",
       "index": 0,
       "level": 1,
       "note": undefined,
@@ -830,37 +974,22 @@ layout: cover
       "start": 0,
       "title": "Page 2",
     },
-    "start": 0,
     "title": "Page 2",
   },
   {
-    "content": "
-# Page 3
-",
-    "end": 2,
+    "content": "# Page 3",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#14",
-      "srcSequence": "sub/nested1-4.md,sub/pages3-4.md",
-      "title": "Page 3",
     },
     "index": 6,
     "level": 1,
     "note": undefined,
-    "raw": "---
-title: Page 3
-background: https://sli.dev/demo-cover.png#14
-srcSequence: sub/nested1-4.md,sub/pages3-4.md
----
-
-# Page 3
-
-",
     "source": {
       "content": "# Page 3",
       "end": 2,
-      "frontmatter": {
-        "title": "Page 3",
-      },
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
       "index": 0,
       "level": 1,
       "note": undefined,
@@ -869,35 +998,19 @@ srcSequence: sub/nested1-4.md,sub/pages3-4.md
       "start": 0,
       "title": "Page 3",
     },
-    "start": 0,
     "title": "Page 3",
   },
   {
-    "content": "
-# Page 4
+    "content": "# Page 4
 
-<Tweet />
-",
-    "end": 10,
+<Tweet />",
     "frontmatter": {
       "background": "https://sli.dev/demo-cover.png#14",
       "layout": "cover",
-      "srcSequence": "sub/nested1-4.md,sub/pages3-4.md",
     },
     "index": 7,
     "level": 1,
     "note": undefined,
-    "raw": "---
-layout: cover
-background: https://sli.dev/demo-cover.png#14
-srcSequence: sub/nested1-4.md,sub/pages3-4.md
----
-
-# Page 4
-
-<Tweet />
-
-",
     "source": {
       "content": "# Page 4
 
@@ -906,6 +1019,9 @@ srcSequence: sub/nested1-4.md,sub/pages3-4.md
       "frontmatter": {
         "layout": "cover",
       },
+      "frontmatterRaw": "layout: cover
+",
+      "frontmatterStyle": "frontmatter",
       "index": 1,
       "level": 1,
       "note": undefined,
@@ -920,27 +1036,37 @@ layout: cover
       "start": 2,
       "title": "Page 4",
     },
-    "start": 2,
     "title": "Page 4",
   },
   {
-    "content": "
-# Inline Page
+    "content": "# Inline Page
 
-$x+2$
-",
-    "end": 25,
+$x+2$",
     "frontmatter": {},
     "index": 8,
     "level": 1,
     "note": undefined,
-    "raw": "
+    "source": {
+      "content": "
 # Inline Page
 
 $x+2$
-
 ",
-    "start": 20,
+      "end": 25,
+      "frontmatter": {},
+      "frontmatterRaw": undefined,
+      "frontmatterStyle": undefined,
+      "index": 4,
+      "level": 1,
+      "note": undefined,
+      "raw": "
+# Inline Page
+
+$x+2$
+",
+      "start": 20,
+      "title": "Inline Page",
+    },
     "title": "Inline Page",
   },
 ]

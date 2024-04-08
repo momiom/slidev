@@ -9,9 +9,13 @@ const props = defineProps({
   class: {
     type: String,
   },
+  backgroundSize: {
+    type: String,
+    default: 'cover',
+  },
 })
 
-const style = computed(() => handleBackground(props.image))
+const style = computed(() => handleBackground(props.image, false, props.backgroundSize))
 </script>
 
 <template>
@@ -19,6 +23,6 @@ const style = computed(() => handleBackground(props.image))
     <div class="slidev-layout default" :class="props.class">
       <slot />
     </div>
-    <div class="w-full w-full" :style="style" />
+    <div class="w-full h-full" :style="style" />
   </div>
 </template>

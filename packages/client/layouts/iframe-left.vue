@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from '@vue/reactivity'
+import { computed } from 'vue'
 
 const props = defineProps<{
   url: string
@@ -17,9 +17,9 @@ const scaleInvertPercent = computed(() => `${(1 / (props.scale || 1)) * 100}%`)
         :src="url"
         :style="scale ? { transform: `scale(${scale})`, transformOrigin: 'top left' } : {}"
       />
-      <div class="slidev-layout default" :class="props.class">
-        <slot />
-      </div>
+    </div>
+    <div class="slidev-layout default" v-bind="$attrs">
+      <slot />
     </div>
   </div>
 </template>

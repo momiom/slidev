@@ -1,27 +1,56 @@
 <script setup lang="ts">
-import { shallowRef, watch } from 'vue'
-import { clicks, currentRoute, isPresenter, nextRoute, rawRoutes } from '../logic/nav'
+import { TransitionGroup, computed, shallowRef, watch } from 'vue'
+import { recomputeAllPoppers } from 'floating-vue'
+import { useNav } from '../composables/useNav'
 import { getSlideClass } from '../utils'
-import SlideWrapper from './SlideWrapper'
-// @ts-expect-error virtual module
-import GlobalTop from '/@slidev/global-components/top'
-// @ts-expect-error virtual module
-import GlobalBottom from '/@slidev/global-components/bottom'
+import { useViewTransition } from '../composables/useViewTransition'
+import { skipTransition } from '../logic/hmr'
+import { createFixedClicks } from '../composables/useClicks'
+import { CLICKS_MAX } from '../constants'
+import SlideWrapper from './SlideWrapper.vue'
 import PresenterMouse from './PresenterMouse.vue'
 
-defineProps<{ context: 'slide' | 'presenter' }>()
+import GlobalTop from '#slidev/global-components/top'
+import GlobalBottom from '#slidev/global-components/bottom'
+
+defineProps<{
+  renderContext: 'slide' | 'presenter'
+}>()
+
+const {
+  currentSlideRoute,
+  currentTransition,
+  getPrimaryClicks,
+  isPresenter,
+  nextRoute,
+  slides,
+  isPrintMode,
+  isPrintWithClicks,
+} = useNav()
 
 // preload next route
-watch(currentRoute, () => {
-  if (currentRoute.value?.meta && currentRoute.value.meta.preload !== false)
-    currentRoute.value.meta.__preloaded = true
+watch(currentSlideRoute, () => {
+  if (currentSlideRoute.value?.meta && currentSlideRoute.value.meta.preload !== false)
+    currentSlideRoute.value.meta.__preloaded = true
   if (nextRoute.value?.meta && nextRoute.value.meta.preload !== false)
     nextRoute.value.meta.__preloaded = true
 }, { immediate: true })
 
+const hasViewTransition = useViewTransition()
+
 const DrawingLayer = shallowRef<any>()
 if (__SLIDEV_FEATURE_DRAWINGS__ || __SLIDEV_FEATURE_DRAWINGS_PERSIST__)
   import('./DrawingLayer.vue').then(v => DrawingLayer.value = v.default)
+
+const loadedRoutes = computed(() => slides.value.filter(r => r.meta?.__preloaded || r === currentSlideRoute.value))
+
+function onAfterLeave() {
+  // After transition, we disable it so HMR won't trigger it again
+  // We will turn it back on `nav.go` so the normal navigation would still work
+  skipTransition.value = true
+  // recompute poppers after transition
+  recomputeAllPoppers()
+}
 </script>
 
 <template>
@@ -29,19 +58,30 @@ if (__SLIDEV_FEATURE_DRAWINGS__ || __SLIDEV_FEATURE_DRAWINGS_PERSIST__)
   <GlobalBottom />
 
   <!-- Slides -->
-  <template v-for="route of rawRoutes" :key="route.path">
-    <SlideWrapper
-      :is="route?.component"
-      v-show="route === currentRoute"
-      v-if="route.meta?.__preloaded || route === currentRoute"
-      :clicks="route === currentRoute ? clicks : 0"
-      :clicks-elements="route.meta?.__clicksElements || []"
-      :clicks-disabled="false"
-      :class="getSlideClass(route)"
-      :route="route"
-      :context="context"
-    />
-  </template>
+  <component
+    :is="hasViewTransition ? 'div' : TransitionGroup"
+    v-bind="skipTransition ? {} : currentTransition"
+    id="slideshow"
+    tag="div"
+    @after-leave="onAfterLeave"
+  >
+    <div
+      v-for="route of loadedRoutes"
+      v-show="route === currentSlideRoute"
+      :key="route.no"
+    >
+      <SlideWrapper
+        :is="route.component!"
+        :clicks-context="isPrintMode && !isPrintWithClicks ? createFixedClicks(route, CLICKS_MAX) : getPrimaryClicks(route)"
+        :class="getSlideClass(route)"
+        :route="route"
+        :render-context="renderContext"
+        class="overflow-hidden"
+      />
+    </div>
+  </component>
+
+  <div id="twoslash-container" />
 
   <!-- Global Top -->
   <GlobalTop />
@@ -51,3 +91,15 @@ if (__SLIDEV_FEATURE_DRAWINGS__ || __SLIDEV_FEATURE_DRAWINGS_PERSIST__)
   </template>
   <PresenterMouse v-if="!isPresenter" />
 </template>
+
+<style scoped>
+#slideshow {
+  height: 100%;
+}
+
+#slideshow > div {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+</style>

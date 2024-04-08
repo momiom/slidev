@@ -1,7 +1,7 @@
 {
   "name": "@slidev/types",
-  "version": "0.38.1",
-  "description": "Shared types declerations for Slidev",
+  "version": "0.48.8",
+  "description": "Shared types declarations for Slidev",
   "author": "antfu <anthonyfu117@hotmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/antfu",
@@ -11,23 +11,36 @@
     "url": "https://github.com/slidevjs/slidev"
   },
   "bugs": "https://github.com/slidevjs/slidev/issues",
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "module": "dist/index.mjs",
   "types": "index.d.ts",
   "files": [
-    "dist",
     "client.d.ts",
+    "dist",
     "index.d.ts"
   ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --splitting",
+    "build": "tsup src/index.ts",
     "dev": "nr build --watch",
     "prepublishOnly": "npm run build"
   },
-  "devDependencies": {
-    "tsup": "^5.12.7"
+  "dependencies": {
+    "@antfu/utils": "^0.7.7",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue-jsx": "^3.1.0",
+    "katex": "^0.16.10",
+    "mermaid": "^10.9.0",
+    "monaco-editor": "^0.47.0",
+    "shiki": "^1.2.3",
+    "unocss": "^0.58.9",
+    "unplugin-icons": "^0.18.5",
+    "unplugin-vue-markdown": "^0.26.0",
+    "vite-plugin-remote-assets": "^0.4.1",
+    "vite-plugin-vue-server-ref": "^0.4.2",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
   }
 }

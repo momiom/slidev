@@ -1,37 +1,21 @@
-/* eslint-disable import/no-duplicates */
 import type { Awaitable } from '@antfu/utils'
-import type { ILanguageRegistration, IThemeRegistration, Highlighter as ShikiHighlighter } from 'shiki'
-import type * as Shiki from 'shiki'
 import type * as monaco from 'monaco-editor'
 import type { App, Ref } from 'vue'
 import type { Router } from 'vue-router'
 import type mermaid from 'mermaid'
 import type { KatexOptions } from 'katex'
-import type { WindiCssOptions } from 'vite-plugin-windicss'
+import type { BuiltinLanguage, BuiltinTheme, CodeOptionsMeta, CodeOptionsThemes, CodeToHastOptionsCommon, Highlighter, LanguageInput } from 'shiki'
 import type { VitePluginConfig as UnoCssConfig } from 'unocss/vite'
 import type { SlidevPreparserExtension } from './types'
+import type { CodeRunnerProviders } from './code-runner'
 
 export interface AppContext {
   app: App
   router: Router
 }
 
-export interface ShikiDarkModeThemes {
-  dark: IThemeRegistration
-  light: IThemeRegistration
-}
-
-export interface ShikiOptions {
-  theme?: IThemeRegistration | ShikiDarkModeThemes
-  langs?: ILanguageRegistration[]
-  highlighter?: ShikiHighlighter
-}
-
 export interface MonacoSetupReturn {
-  theme?: {
-    light?: string
-    dark?: string
-  }
+  editorOptions?: monaco.editor.IEditorOptions
 }
 
 export type MermaidOptions = (typeof mermaid.initialize) extends (a: infer A) => any ? A : never
@@ -59,24 +43,38 @@ export interface ShortcutOptions {
   name?: string
 }
 
+export interface ShikiContext {
+  /**
+   * @deprecated Pass directly the theme name it's supported by Shiki.
+   * For custom themes, load it manually via `JSON.parse(fs.readFileSync(path, 'utf-8'))` and pass the raw JSON object instead.
+   */
+  loadTheme: (path: string) => Promise<any>
+}
+
+export type ShikiSetupReturn =
+  & Partial<Omit<CodeToHastOptionsCommon<BuiltinLanguage>, 'lang'>>
+  & CodeOptionsThemes<BuiltinTheme>
+  & CodeOptionsMeta
+  & {
+    setup?: (highlighter: Highlighter) => Awaitable<void>
+    langs?: (LanguageInput | BuiltinLanguage)[]
+  }
+
 // node side
-export type ShikiSetup = (shiki: typeof Shiki) => Awaitable<ShikiOptions | undefined>
-export type KatexSetup = () => Awaitable<Partial<KatexOptions> | undefined>
-export type WindiSetup = () => Awaitable<Partial<WindiCssOptions> | undefined>
-export type UnoSetup = () => Awaitable<Partial<UnoCssConfig> | undefined>
+export type ShikiSetup = (shiki: ShikiContext) => Awaitable<ShikiSetupReturn | void>
+export type KatexSetup = () => Awaitable<Partial<KatexOptions> | void>
+export type UnoSetup = () => Awaitable<Partial<UnoCssConfig> | void>
 export type PreparserSetup = (filepath: string) => SlidevPreparserExtension
 
 // client side
-export type MonacoSetup = (m: typeof monaco) => Awaitable<MonacoSetupReturn>
+export type MonacoSetup = (m: typeof monaco) => Awaitable<MonacoSetupReturn | void>
 export type AppSetup = (context: AppContext) => Awaitable<void>
-export type MermaidSetup = () => Partial<MermaidOptions> | undefined
+export type RootSetup = () => Awaitable<void>
+export type MermaidSetup = () => Partial<MermaidOptions> | void
 export type ShortcutsSetup = (nav: NavOperations, defaultShortcuts: ShortcutOptions[]) => Array<ShortcutOptions>
+export type CodeRunnersSetup = (runners: CodeRunnerProviders) => Awaitable<CodeRunnerProviders | void>
 
 export function defineShikiSetup(fn: ShikiSetup) {
-  return fn
-}
-
-export function defineWindiSetup(fn: WindiSetup) {
   return fn
 }
 
@@ -105,5 +103,9 @@ export function defineShortcutsSetup(fn: ShortcutsSetup) {
 }
 
 export function definePreparserSetup(fn: PreparserSetup) {
+  return fn
+}
+
+export function defineCodeRunnersSetup(fn: CodeRunnersSetup) {
   return fn
 }

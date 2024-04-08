@@ -1,5 +1,6 @@
-import { computed, nextTick, unref } from 'vue'
-import { router } from '../routes'
+import type { WritableComputedRef } from 'vue'
+import { computed, nextTick, ref, unref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export function useRouteQuery<T extends string | string[]>(
   name: string,
@@ -7,7 +8,9 @@ export function useRouteQuery<T extends string | string[]>(
   {
     mode = 'replace',
   } = {},
-) {
+): WritableComputedRef<T> {
+  const router = useRouter()
+
   return computed<any>({
     get() {
       const data = router.currentRoute.value.query[name]
@@ -19,8 +22,19 @@ export function useRouteQuery<T extends string | string[]>(
     },
     set(v) {
       nextTick(() => {
-        router[unref(mode) as 'replace' | 'push']({ query: { ...router.currentRoute.value.query, [name]: v } })
+        const oldValue = router.currentRoute.value.query[name]
+        if ((oldValue ?? defaultValue?.toString()) === v.toString())
+          return
+        router[unref(mode) as 'replace' | 'push']({
+          query: {
+            ...router.currentRoute.value.query,
+            [name]: `${v}` === defaultValue ? undefined : v,
+          },
+        })
       })
     },
   })
 }
+
+// force update collected elements when the route is fully resolved
+export const routeForceRefresh = ref(0)

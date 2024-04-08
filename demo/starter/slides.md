@@ -3,24 +3,25 @@
 theme: seriph
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
-background: https://source.unsplash.com/collection/94734566/1920x1080
-# apply any windi css classes to the current slide
-class: 'text-center'
-# https://sli.dev/custom/highlighters.html
-highlighter: shiki
-# show line numbers in code blocks
-lineNumbers: false
-# some information about the slides, markdown enabled
+background: https://cover.sli.dev
+# some information about your slides, markdown enabled
+title: Welcome to Slidev
 info: |
   ## Slidev Starter Template
   Presentation slides for developers.
 
   Learn more at [Sli.dev](https://sli.dev)
-# persist drawings in exports and build
+# apply any unocss classes to the current slide
+class: text-center
+# https://sli.dev/custom/highlighters.html
+highlighter: shiki
+# https://sli.dev/guide/drawing
 drawings:
   persist: false
-# use UnoCSS
-css: unocss
+# slide transition: https://sli.dev/guide/animations#slide-transitions
+transition: slide-left
+# enable MDC Syntax: https://sli.dev/guide/syntax#mdc-syntax
+mdc: true
 ---
 
 # Welcome to Slidev
@@ -34,11 +35,11 @@ Presentation slides for developers
 </div>
 
 <div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
+  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
     <carbon:edit />
   </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
-    class="text-xl icon-btn opacity-50 !border-none !hover:text-white">
+  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub" title="Open in GitHub"
+    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
     <carbon-logo-github />
   </a>
 </div>
@@ -47,6 +48,8 @@ Presentation slides for developers
 The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
 -->
 
+---
+transition: fade-out
 ---
 
 # What is Slidev?
@@ -88,12 +91,15 @@ Here is another comment.
 -->
 
 ---
+transition: slide-up
+level: 2
+---
 
 # Navigation
 
 Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
 
-### Keyboard Shortcuts
+## Keyboard Shortcuts
 
 |     |     |
 | --- | --- |
@@ -107,40 +113,63 @@ Hover on the bottom-left corner to see the navigation's controls panel, [learn m
   v-click
   class="absolute -bottom-9 -left-7 w-80 opacity-50"
   src="https://sli.dev/assets/arrow-bottom-left.svg"
+  alt=""
 />
 <p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
 
 ---
+layout: two-cols
+layoutClass: gap-16
+---
+
+# Table of contents
+
+You can use the `Toc` component to generate a table of contents for your slides:
+
+```html
+<Toc minDepth="1" maxDepth="1"></Toc>
+```
+
+The title will be inferred from your slide content, or you can override it with `title` and `level` in your frontmatter.
+
+::right::
+
+<Toc v-click minDepth="1" maxDepth="2"></Toc>
+
+---
 layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
+image: https://cover.sli.dev
 ---
 
 # Code
 
-Use code snippets and get the highlighting directly![^1]
+Use code snippets and get the highlighting directly, and even types hover![^1]
 
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
-}
+```ts {all|5|7|7-8|10|all} twoslash
+// TwoSlash enables TypeScript hover information
+// and errors in markdown code blocks
+// More at https://shiki.style/packages/twoslash
 
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
-}
+import { computed, ref } from 'vue'
+
+const count = ref(0)
+const doubled = computed(() => count.value * 2)
+
+doubled.value = 2
 ```
 
-<arrow v-click="3" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
+<arrow v-click="[4, 5]" x1="350" y1="310" x2="195" y2="334" color="#953" width="2" arrowSize="1" />
 
+<!-- This allow you to embed external code blocks -->
+<<< @/snippets/external.ts#snippet
+
+<!-- Footer -->
 [^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
 
+<!-- Inline style -->
 <style>
 .footnotes-sep {
-  @apply mt-20 opacity-10;
+  @apply mt-5 opacity-10;
 }
 .footnotes {
   @apply text-sm opacity-75;
@@ -149,6 +178,90 @@ function updateUser(id: number, update: User) {
   display: none;
 }
 </style>
+
+<!--
+Notes can also sync with clicks
+
+[click] This will be highlighted after the first click
+
+[click] Highlighted with `count = ref(0)`
+
+[click:3] Last click (skip two clicks)
+-->
+
+---
+level: 2
+---
+
+# Shiki Magic Move
+
+Powered by [shiki-magic-move](https://shiki-magic-move.netlify.app/), Slidev supports animations across multiple code snippets.
+
+Add multiple code blocks and wrap them with <code>````md magic-move</code> (four backticks) to enable the magic move. For example:
+
+````md magic-move
+```ts {*|2|*}
+// step 1
+const author = reactive({
+  name: 'John Doe',
+  books: [
+    'Vue 2 - Advanced Guide',
+    'Vue 3 - Basic Guide',
+    'Vue 4 - The Mystery'
+  ]
+})
+```
+
+```ts {*|1-2|3-4|3-4,8}
+// step 2
+export default {
+  data() {
+    return {
+      author: {
+        name: 'John Doe',
+        books: [
+          'Vue 2 - Advanced Guide',
+          'Vue 3 - Basic Guide',
+          'Vue 4 - The Mystery'
+        ]
+      }
+    }
+  }
+}
+```
+
+```ts
+// step 3
+export default {
+  data: () => ({
+    author: {
+      name: 'John Doe',
+      books: [
+        'Vue 2 - Advanced Guide',
+        'Vue 3 - Basic Guide',
+        'Vue 4 - The Mystery'
+      ]
+    }
+  })
+}
+```
+
+Non-code blocks are ignored.
+
+```vue
+<!-- step 4 -->
+<script setup>
+const author = {
+  name: 'John Doe',
+  books: [
+    'Vue 2 - Advanced Guide',
+    'Vue 3 - Basic Guide',
+    'Vue 4 - The Mystery'
+  ]
+}
+</script>
+```
+````
 
 ---
 
@@ -192,7 +305,6 @@ Also, HTML elements are valid:
 </div>
 -->
 
-
 ---
 class: px-20
 ---
@@ -201,7 +313,7 @@ class: px-20
 
 Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
 
-<div grid="~ cols-2 gap-2" m="-t-2">
+<div grid="~ cols-2 gap-2" m="t-2">
 
 ```yaml
 ---
@@ -215,9 +327,9 @@ theme: seriph
 ---
 ```
 
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
+<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true" alt="">
 
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
+<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true" alt="">
 
 </div>
 
@@ -225,44 +337,85 @@ Read more about [How to use a theme](https://sli.dev/themes/use.html) and
 check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
 
 ---
-preload: false
+
+# Clicks Animations
+
+You can add `v-click` to elements to add a click animation.
+
+<div v-click>
+
+This shows up when you click the slide:
+
+```html
+<div v-click>This shows up when you click the slide.</div>
+```
+
+</div>
+
+<br>
+
+<v-click>
+
+The <span v-mark.red="3"><code>v-mark</code> directive</span>
+also allows you to add
+<span v-mark.circle.orange="4">inline marks</span>
+, powered by [Rough Notation](https://roughnotation.com/):
+
+```html
+<span v-mark.underline.orange>inline markers</span>
+```
+
+</v-click>
+
+<div mt-20 v-click>
+
+[Learn More](https://sli.dev/guide/animations#click-animations)
+
+</div>
+
 ---
 
-# Animations
+# Motions
 
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
+Motion animations are powered by [@vueuse/motion](https://motion.vueuse.org/), triggered by `v-motion` directive.
 
 ```html
 <div
   v-motion
   :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
+  :enter="{ x: 0 }"
+  :click-3="{ x: 80 }"
+  :leave="{ x: 1000 }"
+>
   Slidev
 </div>
 ```
 
-<div class="w-60 relative mt-6">
+<div class="w-60 relative">
   <div class="relative w-40 h-40">
     <img
       v-motion
       :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
       :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
+      class="absolute inset-0"
       src="https://sli.dev/logo-square.png"
+      alt=""
     />
     <img
       v-motion
       :initial="{ y: 500, x: -100, scale: 2 }"
       :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
+      class="absolute inset-0"
       src="https://sli.dev/logo-circle.png"
+      alt=""
     />
     <img
       v-motion
       :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
       :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
+      class="absolute inset-0"
       src="https://sli.dev/logo-triangle.png"
+      alt=""
     />
   </div>
 
@@ -293,7 +446,7 @@ const final = {
 
 <div
   v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
+  :initial="{ x:35, y: 30, opacity: 0}"
   :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
 
 [Learn More](https://sli.dev/guide/animations.html#motion)
@@ -311,7 +464,7 @@ LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
 Inline $\sqrt{3x-1}+(1+x)^2$
 
 Block
-$$
+$$ {1|3|all}
 \begin{array}{c}
 
 \nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
@@ -334,9 +487,9 @@ $$
 
 You can create diagrams / graphs from textual descriptions, directly in your Markdown.
 
-<div class="grid grid-cols-3 gap-10 pt-4 -mb-6">
+<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
 
-```mermaid {scale: 0.5}
+```mermaid {scale: 0.5, alt: 'A simple sequence diagram'}
 sequenceDiagram
     Alice->John: Hello John, how are you?
     Note over Alice,John: A typical interaction
@@ -347,6 +500,26 @@ graph TD
 B[Text] --> C{Decision}
 C -->|One| D[Result 1]
 C -->|Two| E[Result 2]
+```
+
+```mermaid
+mindmap
+  root((mindmap))
+    Origins
+      Long history
+      ::icon(fa fa-book)
+      Popularisation
+        British popular psychology author Tony Buzan
+    Research
+      On effectiveness<br/>and features
+      On Automatic creation
+        Uses
+            Creative techniques
+            Strategic planning
+            Argument mapping
+    Tools
+      Pen and paper
+      Mermaid
 ```
 
 ```plantuml {scale: 0.7}
@@ -366,7 +539,6 @@ cloud {
   [Example 1]
 }
 
-
 database "MySql" {
   folder "This is my folder" {
     [Folder 3]
@@ -375,7 +547,6 @@ database "MySql" {
     [Frame 4]
   }
 }
-
 
 [Another Component] --> [Example 1]
 [Example 1] --> [Folder 3]
@@ -392,6 +563,34 @@ database "MySql" {
 src: ./pages/multiple-entries.md
 hide: false
 ---
+
+---
+
+# Monaco Editor
+
+Slidev provides built-in Moanco Editor support.
+
+Add `{monaco}` to the code block to turn it into an editor:
+
+```ts {monaco}
+import { ref } from 'vue'
+import hello from './external'
+
+const code = ref('const a = 1')
+hello()
+```
+
+Use `{monaco-run}` to create an editor that can execute the code directly in the slide:
+
+```ts {monaco-run}
+function fibonacci(n: number): number {
+  return n <= 1
+    ? n
+    : fibonacci(n - 1) + fibonacci(n - 2) // you know, this is NOT the best way to do it :P
+}
+
+console.log(Array.from({ length: 10 }, (_, i) => fibonacci(i + 1)))
+```
 
 ---
 layout: center

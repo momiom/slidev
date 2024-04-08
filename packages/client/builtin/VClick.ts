@@ -4,14 +4,16 @@
  * Learn more: https://sli.dev/guide/animations.html#click-animations
  */
 
-import { createVNode, defineComponent } from 'vue'
+import type { PropType, VNode } from 'vue'
+import { Text, defineComponent, h } from 'vue'
+import { CLICKS_MAX } from '../constants'
 import VClicks from './VClicks'
 
 export default defineComponent({
   props: {
     at: {
       type: [Number, String],
-      default: null,
+      default: '+1',
     },
     hide: {
       type: Boolean,
@@ -21,16 +23,28 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    wrapText: {
+      type: Function as PropType<(text: VNode) => VNode>,
+      default: (text: VNode) => h('span', text),
+    },
   },
   render() {
-    return createVNode(
-      VClicks, {
-        every: 99999,
+    return h(
+      VClicks,
+      {
+        every: CLICKS_MAX,
         at: this.at,
         hide: this.hide,
         fade: this.fade,
       },
-      { default: this.$slots.default },
+      {
+        default: () =>
+          this.$slots.default?.().map(v =>
+            v.type === Text
+              ? this.wrapText(v)
+              : v,
+          ),
+      },
     )
   },
 })

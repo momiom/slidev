@@ -1,75 +1,68 @@
-import type { RouteRecordRaw } from 'vue-router'
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import Play from './internals/Play.vue'
-import Print from './internals/Print.vue'
-// @ts-expect-error missing types
-import _rawRoutes from '/@slidev/routes'
-import _configs from '/@slidev/configs'
-
-export const rawRoutes = _rawRoutes as RouteRecordRaw[]
+import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
+import configs from '#slidev/configs'
 
 export const routes: RouteRecordRaw[] = [
   {
-    name: 'play',
-    path: '/',
-    component: Play,
-    children: [
-      ...rawRoutes,
-    ],
+    name: 'print',
+    path: '/print',
+    component: () => import('./pages/print.vue'),
   },
-  { name: 'print', path: '/print', component: Print },
+
+  // Redirects
   { path: '', redirect: { path: '/1' } },
-  { path: '/:pathMatch(.*)', redirect: { path: '/1' } },
-  { path: '/presenter/print', component: () => import('./internals/PresenterPrint.vue') },
-  {
-    name: 'presenter',
-    path: '/presenter/:no',
-    component: () => import('./internals/Presenter.vue'),
-    beforeEnter: (to) => {
-      if (!_configs.remote || _configs.remote === to.query.password)
-        return true
-      if (_configs.remote && to.query.password === undefined) {
-        // eslint-disable-next-line no-alert
-        const password = prompt('Enter password')
-        if (_configs.remote === password)
-          return true
-      }
-      if (to.params.no)
-        return { path: `/${to.params.no}` }
-      return { path: '' }
-    },
-  },
-  {
-    path: '/presenter',
-    redirect: { path: '/presenter/1' },
-  },
 ]
 
-export const router = createRouter({
-  history: __SLIDEV_HASH_ROUTE__ ? createWebHashHistory(import.meta.env.BASE_URL) : createWebHistory(import.meta.env.BASE_URL),
-  routes,
-})
-
-declare module 'vue-router' {
-  interface RouteMeta {
-    layout: string
-    name?: string
-    class?: string
-    clicks?: number
-    slide?: {
-      start: number
-      end: number
-      note?: string
-      notesHTML?: string
-      id: number
-      no: number
-      filepath: string
-      title?: string
-      level?: number
+if (__SLIDEV_FEATURE_PRESENTER__) {
+  function passwordGuard(to: RouteLocationNormalized) {
+    if (!configs.remote || configs.remote === to.query.password)
+      return true
+    if (configs.remote && to.query.password === undefined) {
+      // eslint-disable-next-line no-alert
+      const password = prompt('Enter password')
+      if (configs.remote === password)
+        return true
     }
-
-    // private fields
-    __clicksElements: HTMLElement[]
-    __preloaded?: boolean
+    if (to.params.no)
+      return { path: `/${to.params.no}` }
+    return { path: '' }
   }
+
+  routes.push({
+    path: '/presenter/print',
+    component: () => import('./pages/presenter/print.vue'),
+  })
+  if (__SLIDEV_HAS_SERVER__) {
+    routes.push({
+      name: 'entry',
+      path: '/entry',
+      component: () => import('./pages/entry.vue'),
+    })
+    routes.push({
+      name: 'overview',
+      path: '/overview',
+      component: () => import('./pages/overview.vue'),
+    })
+    routes.push({
+      name: 'notes',
+      path: '/notes',
+      component: () => import('./pages/notes.vue'),
+      beforeEnter: passwordGuard,
+    })
+  }
+  routes.push({
+    name: 'presenter',
+    path: '/presenter/:no',
+    component: () => import('./pages/presenter.vue'),
+    beforeEnter: passwordGuard,
+  })
+  routes.push({
+    path: '/presenter',
+    redirect: { path: '/presenter/1' },
+  })
 }
+
+routes.push({
+  name: 'play',
+  path: '/:no',
+  component: () => import('./pages/play.vue'),
+})

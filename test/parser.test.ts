@@ -1,26 +1,42 @@
-import { basename, resolve } from 'path'
+import { basename, resolve } from 'node:path'
 import fg from 'fast-glob'
 import { describe, expect, it } from 'vitest'
-import { load, parse, prettify, stringify } from '../packages/parser/src/fs'
-import type { SlidevPreparserExtension } from '../slidev/types/src/types'
+import { getDefaultConfig, load, parse, prettify, resolveConfig, stringify } from '../packages/parser/src/fs'
+import type { SlidevConfig, SlidevPreparserExtension } from '../packages/types/src'
+
+function configDiff(v: SlidevConfig) {
+  const defaults = getDefaultConfig()
+  const res: Record<string, any> = {}
+  for (const key of Object.keys(v) as (keyof SlidevConfig)[]) {
+    if (JSON.stringify(v[key]) !== JSON.stringify(defaults[key]))
+      res[key] = v[key]
+  }
+  return res
+}
+
+function replaceCRLF(s: string) {
+  return s.replace(/\r\n/g, '\n')
+}
 
 describe('md parser', () => {
+  const userRoot = resolve(__dirname, 'fixtures/markdown')
   const files = fg.sync('*.md', {
-    cwd: resolve(__dirname, 'fixtures/markdown'),
+    cwd: userRoot,
     absolute: true,
   })
 
   for (const file of files) {
     it(basename(file), async () => {
-      const data = await load(file)
+      const data = await load(userRoot, file)
 
-      expect(stringify(data).trim()).toEqual(data.raw.trim())
+      expect(stringify(data.entry).trim()).toEqual(replaceCRLF(data.entry.raw.trim()))
 
-      prettify(data)
+      prettify(data.entry)
 
       for (const slide of data.slides) {
         if (slide.source?.filepath)
-          // @ts-ingore non-optional
+          // eslint-disable-next-line ts/prefer-ts-expect-error
+          // @ts-ignore non-optional
           delete slide.source.filepath
         // @ts-expect-error extra prop
         if (slide.filepath)
@@ -28,7 +44,7 @@ describe('md parser', () => {
           delete slide.filepath
       }
       expect(data.slides).toMatchSnapshot('slides')
-      expect(data.config).toMatchSnapshot('config')
+      expect(configDiff(resolveConfig(data.headmatter, {}))).toMatchSnapshot('config')
       expect(data.features).toMatchSnapshot('features')
     })
   }
@@ -54,7 +70,7 @@ e
 
 f
 
-`)
+`, 'file.md')
     expect(data.slides.map(i => i.content.trim()))
       .toEqual(Array.from('abcdef'))
     expect(data.slides[2].frontmatter)
@@ -84,7 +100,7 @@ e
 
 f
 
-`)
+`, 'file.md')
     expect(data.slides.map(i => i.content.trim()))
       .toEqual(Array.from('abcdef'))
     expect(data.slides[2].frontmatter)
@@ -93,8 +109,17 @@ f
       .toEqual({ })
   })
 
-  async function parseWithExtension(src, transformRawLines, more = {}, moreExts: SlidevPreparserExtension = []) {
-    return await parse(src, undefined, undefined, [], async () => [{ transformRawLines, ...more }, ...moreExts])
+  async function parseWithExtension(
+    src: string,
+    transformRawLines: (lines: string[]) => void | Promise<void> = () => {},
+    more = {},
+    moreExts: SlidevPreparserExtension[] = [],
+  ) {
+    return await parse(
+      src,
+      'file.md',
+      [{ transformRawLines, ...more }, ...moreExts] as any,
+    )
   }
 
   it('parse with-extension replace', async () => {
@@ -140,7 +165,7 @@ b
   })
 
   it('parse with-extension eg-easy-cover', async () => {
-    function cov(i, more = '.jpg') {
+    function cov(i: string, more = '.jpg') {
       return `---
 layout: cover
 background: ${i}${more}
@@ -182,27 +207,30 @@ a..A
 a.a.A.A
 .a.A.
 `, undefined, {}, [{
+      name: 'test',
       transformRawLines(lines: string[]) {
         for (const i in lines)
           lines[i] = lines[i].replace(/A/g, 'B').replace(/a/g, 'A')
       },
-    },
-    {
+    }, {
+      name: 'test',
       transformRawLines(lines: string[]) {
         for (const i in lines)
           lines[i] = lines[i].replace(/A/g, 'C')
       },
-    },
-    ])
+    }])
     expect(data.slides.map(i => i.content.trim().replace(/\n/g, '%')).join('/'))
       .toEqual('C..B%C.C.B.B%.C.B.')
   })
 
   // Generate cartesian product of given iterables:
-  function* cartesian(...all) {
+  function* cartesian(...all: any[]): Generator<any[], void, void> {
     const [head, ...tail] = all
     const remainder = tail.length ? cartesian(...tail) : [[]]
-    for (const r of remainder) for (const h of head) yield [h, ...r]
+    for (const r of remainder) {
+      for (const h of head)
+        yield [h, ...r]
+    }
   }
   const B = [0, 1]
   const Bs = [B, B, B, B, B, B]
@@ -218,7 +246,7 @@ withSlideBefore
 
 ---
 `
-: ''}${!withSlideBefore && withFrontmatter ? '---\n' : ''}${withFrontmatter
+: ''}${(!withSlideBefore && withFrontmatter) ? '---\n' : ''}${withFrontmatter
 ? `m: M
 n: N
 ---`
@@ -259,7 +287,7 @@ withSlideAfter
           return lines.join('\n')
         },
       })
-      function project(s) {
+      function project(s: string) {
         // like the trim in other tests, the goal is not to test newlines here
         return s.replace(/%%%*/g, '%')
       }

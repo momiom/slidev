@@ -1,41 +1,27 @@
 import YAML from 'js-yaml'
-import { isObject, isTruthy, objectMap } from '@antfu/utils'
-import type { PreparserExtensionFromHeadmatter, SlideInfo, SlideInfoBase, SlidevFeatureFlags, SlidevMarkdown, SlidevPreparserExtension, SlidevThemeMeta } from '@slidev/types'
-import { resolveConfig } from './config'
+import { ensurePrefix, isObject, objectMap } from '@antfu/utils'
+import type { FrontmatterStyle, SlidevFeatureFlags, SlidevMarkdown, SlidevPreparserExtension, SourceSlideInfo } from '@slidev/types'
 
 export function stringify(data: SlidevMarkdown) {
-  return `${
-    data.slides
-      .filter(slide => slide.source === undefined || slide.inline !== undefined)
-      .map((slide, idx) => stringifySlide(slide.inline || slide, idx))
-      .join('\n')
-      .trim()
-  }\n`
+  return `${data.slides.map(stringifySlide).join('\n').trim()}\n`
 }
 
-export function filterDisabled(data: SlidevMarkdown) {
-  data.slides = data.slides.filter(i => !i.frontmatter?.disabled)
-  return data
-}
-
-export function stringifySlide(data: SlideInfoBase, idx = 0) {
-  if (data.raw == null)
-    prettifySlide(data)
-
+export function stringifySlide(data: SourceSlideInfo, idx = 0) {
   return (data.raw.startsWith('---') || idx === 0)
     ? data.raw
-    : `---\n${data.raw.startsWith('\n') ? data.raw : `\n${data.raw}`}`
+    : `---\n${ensurePrefix('\n', data.raw)}`
 }
 
-export function prettifySlide(data: SlideInfoBase) {
-  data.content = `\n${data.content.trim()}\n`
-  data.raw = Object.keys(data.frontmatter || {}).length
-    ? `---\n${YAML.dump(data.frontmatter).trim()}\n---\n${data.content}`
+export function prettifySlide(data: SourceSlideInfo) {
+  const trimed = data.content.trim()
+  data.content = trimed ? `\n${data.content.trim()}\n` : ''
+  data.raw = data.frontmatterRaw
+    ? data.frontmatterStyle === 'yaml'
+      ? `\`\`\`yaml\n${data.frontmatterRaw.trim()}\n\`\`\`\n${data.content}`
+      : `---\n${data.frontmatterRaw.trim()}\n---\n${data.content}`
     : data.content
   if (data.note)
     data.raw += `\n<!--\n${data.note.trim()}\n-->\n`
-  else
-    data.raw += '\n'
   return data
 }
 
@@ -44,32 +30,57 @@ export function prettify(data: SlidevMarkdown) {
   return data
 }
 
+function safeParseYAML(str: string) {
+  const res = YAML.load(str)
+  return isObject(res) ? res : {}
+}
+
 function matter(code: string) {
-  let data: any = {}
-  const content = code.replace(/^---.*\r?\n([\s\S]*?)---/,
-    (_, d) => {
-      data = YAML.load(d)
-      if (!isObject(data))
-        data = {}
+  let type: FrontmatterStyle | undefined
+  let raw: string | undefined
+
+  const data: any = {}
+
+  let content = code
+    .replace(/^---.*\r?\n([\s\S]*?)---/, (_, f) => {
+      type = 'frontmatter'
+      raw = f
+      Object.assign(data, safeParseYAML(f))
       return ''
     })
-  return { data, content }
+
+  if (type !== 'frontmatter') {
+    content = content
+      .replace(/^\s*```ya?ml([\s\S]*?)```/, (_, d) => {
+        type = 'yaml'
+        raw = d
+        Object.assign(data, safeParseYAML(d))
+        return ''
+      })
+  }
+
+  return {
+    type,
+    raw,
+    data,
+    content,
+  }
 }
 
 export function detectFeatures(code: string): SlidevFeatureFlags {
   return {
-    katex: !!code.match(/\$.*?\$/) || !!code.match(/$\$\$/),
+    katex: !!code.match(/\$.*?\$/) || !!code.match(/\$\$/),
     monaco: !!code.match(/{monaco.*}/),
     tweet: !!code.match(/<Tweet\b/),
     mermaid: !!code.match(/^```mermaid/m),
   }
 }
 
-export function parseSlide(raw: string): SlideInfoBase {
-  const result = matter(raw)
+export function parseSlide(raw: string): Omit<SourceSlideInfo, 'filepath' | 'index' | 'start' | 'end'> {
+  const matterResult = matter(raw)
   let note: string | undefined
-  const frontmatter = result.data || {}
-  let content = result.content.trim()
+  const frontmatter = matterResult.data || {}
+  let content = matterResult.content.trim()
 
   const comments = Array.from(content.matchAll(/<!--([\s\S]*?)-->/g))
   if (comments.length) {
@@ -84,13 +95,14 @@ export function parseSlide(raw: string): SlideInfoBase {
   let level
   if (frontmatter.title || frontmatter.name) {
     title = frontmatter.title || frontmatter.name
-    level = frontmatter.level || 1
   }
   else {
     const match = content.match(/^(#+) (.*)$/m)
     title = match?.[2]?.trim()
     level = match?.[1]?.length
   }
+  if (frontmatter.level)
+    level = frontmatter.level || 1
 
   return {
     raw,
@@ -98,19 +110,19 @@ export function parseSlide(raw: string): SlideInfoBase {
     level,
     content,
     frontmatter,
+    frontmatterStyle: matterResult.type,
+    frontmatterRaw: matterResult.raw,
     note,
   }
 }
 
 export async function parse(
   markdown: string,
-  filepath?: string,
-  themeMeta?: SlidevThemeMeta,
+  filepath: string,
   extensions?: SlidevPreparserExtension[],
-  onHeadmatter?: PreparserExtensionFromHeadmatter,
 ): Promise<SlidevMarkdown> {
   const lines = markdown.split(/\r?\n/g)
-  const slides: SlideInfo[] = []
+  const slides: SourceSlideInfo[] = []
 
   let start = 0
 
@@ -120,6 +132,7 @@ export async function parse(
     const raw = lines.slice(start, end).join('\n')
     const slide = {
       ...parseSlide(raw),
+      filepath,
       index: slides.length,
       start,
       end,
@@ -135,22 +148,6 @@ export async function parse(
     }
     slides.push(slide)
     start = end + 1
-  }
-
-  // identify the headmatter, to be able to load preparser extensions
-  // (strict parsing based on the parsing code)
-  {
-    let hm = ''
-    if (lines[0].match(/^---([^-].*)?$/) && !lines[1]?.match(/^\s*$/)) {
-      let hEnd = 1
-      while (hEnd < lines.length && !lines[hEnd].trimEnd().match(/^---$/))
-        hEnd++
-      hm = lines.slice(1, hEnd).join('\n')
-    }
-    if (onHeadmatter) {
-      const o = YAML.load(hm) ?? {}
-      extensions = await onHeadmatter(o, extensions ?? [], filepath)
-    }
   }
 
   if (extensions) {
@@ -187,43 +184,15 @@ export async function parse(
   if (start <= lines.length - 1)
     await slice(lines.length)
 
-  const headmatter = slides[0]?.frontmatter || {}
-  headmatter.title = headmatter.title || slides[0]?.title
-  const config = resolveConfig(headmatter, themeMeta, filepath)
-  const features = detectFeatures(markdown)
-
   return {
-    raw: markdown,
     filepath,
+    raw: markdown,
     slides,
-    config,
-    features,
-    headmatter,
-    themeMeta,
   }
 }
 
 export function mergeFeatureFlags(a: SlidevFeatureFlags, b: SlidevFeatureFlags): SlidevFeatureFlags {
   return objectMap(a, (k, v) => [k, v || b[k]])
-}
-
-// types auto discovery for TypeScript monaco
-export function scanMonacoModules(md: string) {
-  const typeModules = new Set<string>()
-
-  md.replace(/^```(\w+?)\s*{monaco([\w:,-]*)}[\s\n]*([\s\S]+?)^```/mg, (full, lang = 'ts', options: string, code: string) => {
-    options = options || ''
-    lang = lang.trim()
-    if (lang === 'ts' || lang === 'typescript') {
-      Array.from(code.matchAll(/\s+from\s+(["'])([\/\w@-]+)\1/g))
-        .map(i => i[2])
-        .filter(isTruthy)
-        .map(i => typeModules.add(i))
-    }
-    return ''
-  })
-
-  return Array.from(typeModules)
 }
 
 export * from './utils'

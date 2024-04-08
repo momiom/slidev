@@ -26,9 +26,9 @@ Presentation <b>slide</b>s for <b>dev</b>elopers 🧑‍💻👩‍💻👨‍�
 <table>
 <tbody>
 <td align="center">
-<img width="2000" height="0"><br>
+<img width="2000" height="0" alt="" aria-hiden><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/antfu">Sponsor Program 💖</a></sub><br>
-<img width="2000" height="0">
+<img width="2000" height="0" alt="" aria-hiden>
 </td>
 </tbody>
 </table>
@@ -39,7 +39,7 @@ Presentation <b>slide</b>s for <b>dev</b>elopers 🧑‍💻👩‍💻👨‍�
 - 📝 [**Markdown-based**](https://sli.dev/guide/syntax.html) - use your favorite editors and workflow
 - 🧑‍💻 [**Developer Friendly**](https://sli.dev/guide/syntax.html#code-blocks) - built-in syntax highlighting, live coding, etc.
 - 🎨 [**Themable**](https://sli.dev/themes/gallery.html) - theme can be shared and used with npm packages.
-- 🌈 [**Stylish**](https://sli.dev/guide/syntax.html#embedded-styles) - on-demand utilities via [Windi CSS](https://windicss.org/) or [UnoCSS](https://github.com/unocss/unocss).
+- 🌈 [**Stylish**](https://sli.dev/guide/syntax.html#embedded-styles) - on-demand utilities via [UnoCSS](https://github.com/unocss/unocss).
 - 🤹 [**Interactive**](https://sli.dev/custom/directory-structure.html#components) - embedding Vue components seamlessly.
 - 🎙 [**Presenter Mode**](https://sli.dev/guide/presenter-mode.html) - use another window, or even your phone to control your slides.
 - 🧮 [**LaTeX**](https://sli.dev/guide/syntax.html#latex) - built-in LaTeX math equations support.
@@ -61,7 +61,7 @@ Presentation <b>slide</b>s for <b>dev</b>elopers 🧑‍💻👩‍💻👨‍�
 
 ### Init Project Locally
 
-Install [Node.js >=14](https://nodejs.org/) and run the following command:
+Install [Node.js >=18](https://nodejs.org/) and run the following command:
 
 ```bash
 npm init slidev
@@ -78,10 +78,10 @@ For a full example, you can check the [demo](https://github.com/slidevjs/slidev/
 
 - [Vite](https://vitejs.dev) - An extremely fast frontend tooling
 - [Vue 3](https://v3.vuejs.org/) powered [Markdown](https://daringfireball.net/projects/markdown/syntax) - Focus on the content while having the power of HTML and Vue components whenever needed
-- [Windi CSS](https://github.com/windicss/windicss) / [UnoCSS](https://github.com/unocss/unocss) - On-demand utility-first CSS framework, style your slides at ease
+- [UnoCSS](https://github.com/unocss/unocss) - On-demand utility-first CSS engine, style your slides at ease
 - [Prism](https://github.com/PrismJS/prism), [Shiki](https://github.com/shikijs/shiki), [Monaco Editor](https://github.com/Microsoft/monaco-editor) - First-class code snippets support with live coding capability
 - [RecordRTC](https://recordrtc.org) - Built-in recording and camera view
-- [VueUse](https://vueuse.org) family -  [`@vueuse/core`](https://github.com/vueuse/vueuse), [`@vueuse/head`](https://github.com/vueuse/head), [`@vueuse/motion`](https://github.com/vueuse/motion), etc.
+- [VueUse](https://vueuse.org) family - [`@vueuse/core`](https://github.com/vueuse/vueuse), [`@vueuse/motion`](https://github.com/vueuse/motion), etc.
 - [Iconify](https://iconify.design/) - Iconsets collection.
 - [Drauu](https://github.com/antfu/drauu) - Drawing and annotations support
 - [KaTeX](https://katex.org/) - LaTeX math rendering.
@@ -93,7 +93,7 @@ This project is made possible by all the sponsors supporting my work:
 
 <p align="center">
   <a href="https://github.com/sponsors/antfu">
-    <img src='https://cdn.jsdelivr.net/gh/antfu/static/sponsors.svg'/>
+    <img src='https://cdn.jsdelivr.net/gh/antfu/static/sponsors.svg' alt="Logos from Sponsors" />
   </a>
 </p>
 

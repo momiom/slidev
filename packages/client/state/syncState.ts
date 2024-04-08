@@ -7,7 +7,7 @@ export function createSyncState<State extends object>(serverState: State, defaul
   let patchingTimeout: NodeJS.Timeout
   let updatingTimeout: NodeJS.Timeout
 
-  const state = __DEV__
+  const state = __SLIDEV_HAS_SERVER__
     ? reactive<State>(serverState) as State
     : reactive<State>(defaultState) as State
 
@@ -16,6 +16,8 @@ export function createSyncState<State extends object>(serverState: State, defaul
   }
 
   function patch<K extends keyof State>(key: K, value: State[K]) {
+    if (state[key] === value)
+      return
     clearTimeout(patchingTimeout)
     patching = true
     state[key] = value
@@ -35,18 +37,18 @@ export function createSyncState<State extends object>(serverState: State, defaul
 
   function init(channelKey: string) {
     let stateChannel: BroadcastChannel
-    if (!__DEV__ && !persist) {
+    if (!__SLIDEV_HAS_SERVER__ && !persist) {
       stateChannel = new BroadcastChannel(channelKey)
       stateChannel.addEventListener('message', (event: MessageEvent<Partial<State>>) => onUpdate(event.data))
     }
-    else if (!__DEV__ && persist) {
+    else if (!__SLIDEV_HAS_SERVER__ && persist) {
       window.addEventListener('storage', (event) => {
         if (event && event.key === channelKey && event.newValue)
           onUpdate(JSON.parse(event.newValue) as Partial<State>)
       })
     }
 
-    function onDrawingStateChanged() {
+    function onStateChanged() {
       if (!persist && stateChannel && !updating)
         stateChannel.postMessage(toRaw(state))
       else if (persist && !updating)
@@ -55,8 +57,9 @@ export function createSyncState<State extends object>(serverState: State, defaul
         onPatchCallbacks.forEach((fn: (state: State) => void) => fn(state))
     }
 
-    watch(state, onDrawingStateChanged, { deep: true })
-    if (!__DEV__ && persist) {
+    watch(state, onStateChanged, { deep: true, flush: 'sync' })
+
+    if (!__SLIDEV_HAS_SERVER__ && persist) {
       const serialzedState = window.localStorage.getItem(channelKey)
       if (serialzedState)
         onUpdate(JSON.parse(serialzedState) as Partial<State>)
